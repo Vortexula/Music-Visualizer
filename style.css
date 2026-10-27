@@ -1,0 +1,67 @@
+h1 {
+    color: rgb(255, 255, 255);
+    font-size: 48px;
+    font-family: Courier, sans-serif;
+    text-shadow: 5px 5px 4px #fffefe;
+    letter-spacing: 3px;
+    text-align: center;
+    margin: 15px;
+}
+
+body {
+    background-image: url('Images/background.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+separator {
+    display: block;
+    margin: 25px;
+}
+
+section.Description {
+    color: white;
+    font-family: Courier, sans-serif;
+    text-shadow: 0px 0px 4px #fffefe;
+    text-align: center;
+    padding: 20px;
+}
+
+section.MusicUpload {
+    color: white;
+    font-family: Courier, sans-serif;
+    text-shadow: 3px 3px 4px #fffefe;
+    text-align: center;
+    padding: 20px;
+}
+
+section.VisualizerChoice {
+    color: white;
+    font-family: Courier, sans-serif;
+    text-shadow: 3px 3px 4px #fffefe;
+    text-align: center;
+    padding: 20px;
+}
+
+#musicVisualizer {
+    display: block;
+    margin: 20px auto;
+    width: 95%;
+    max-width: 95%;
+    border: 2px solid white;
+    box-sizing: border-box;
+}
+
+section.Controls {
+    margin: 50px;
+    text-align: center;
+}
+
+footer {
+    color: white;
+    font-family: Courier, sans-serif;
+    text-shadow: 5px 5px 4px #fffefe;
+    text-align: center;
+    padding: 10px;
+}

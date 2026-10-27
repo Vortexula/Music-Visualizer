@@ -1,0 +1,34 @@
+<head><link rel="stylesheet" href="style.css"></head>
+<body>
+   <header>
+        <title>Music Visualizer</title>
+        <h1>Music Visualizer</h1>
+    </header> 
+    <separator></separator>
+    <main>
+        <section class="Description">
+            <h3>Welcome to my Music Visualizer, I worked very hard on it and I hope you enjoy it!</h3>
+        </section>
+        <section class="MusicUpload">
+            <h2>Upload a music file to visualize:</h2>
+            <input type="file" id="audioFile" accept="audio/*">
+        </section>
+        <section class="VisualizerChoice">
+            <h2>Choose a visualizer to use:</h2>
+            <select id="visualizerSelection">
+                <option value="bars">Bars</option>
+                <option value="wave">Wave</option>
+            </select>
+        </section>
+        <section class="VisualizationContainer">
+            <canvas id="musicVisualizer" width="800" height="800"> Visualizer will play here.</canvas>
+        </section>
+        <section class="controls">
+            <audio id="controls" src="" controls></audio>
+        </section>
+    </main>
+    <footer>
+        <p>Created by: Jonathan</p>
+    </footer>
+</body>
+<script src="main.js"></script>
