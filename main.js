@@ -12,7 +12,8 @@ let Threshold = 0.3;
 let _AudioContext = null;
 let Analyzer = null;
 let Music = null;
-let MusicData = null;
+let MusicData_Bars = null;
+let MusicData_Wave = null;
 let Count = 0;
 
 MusicVisualizer.width = MusicVisualizer.clientWidth
@@ -50,7 +51,8 @@ Controls.addEventListener("play", function() {
         Analyzer.fftSize = 256
         MediaSource.connect(Analyzer)
         Analyzer.connect(_AudioContext.destination)
-        MusicData = new Uint8Array(Analyzer.frequencyBinCount)
+        MusicData_Bars = new Uint8Array(Analyzer.frequencyBinCount)
+        MusicData_Wave = new Uint8Array(Analyzer.fftSize)
     }
 })
 
@@ -60,15 +62,34 @@ function AnimationTick() {
     Count++;
     if (Analyzer !== null && VisualizerSelection === "bars") { // Bars Visualizer
         VisualizerContext.fillStyle = Gradient;
-        Analyzer.getByteFrequencyData(MusicData)
-        let spacing = MusicData.length*Threshold/NumberOfBars
+        Analyzer.getByteFrequencyData(MusicData_Bars)
+        let spacing = MusicData_Bars.length*Threshold/NumberOfBars
         let BarWidth = MusicVisualizer.width/NumberOfBars
         for (let i = 0; i < NumberOfBars; i++) {
-            let SlotIndex = Math.floor(i * spacing) + 1
-            let BarY = MusicData[SlotIndex] / 255
+            let SlotIndex = Math.floor(i * spacing) + 3
+            let BarY = MusicData_Bars[SlotIndex] / 255
             let RealHeight = BarY * MusicVisualizer.height
             let BarHeight = MusicVisualizer.height-RealHeight
             VisualizerContext.fillRect(i*BarWidth, BarHeight, BarWidth-5, RealHeight);
         }
+    } else if (Analyzer !== null && VisualizerSelection === "wave") {
+        Analyzer.getByteTimeDomainData(MusicData_Wave);
+        VisualizerContext.beginPath();
+        VisualizerContext.lineWidth = 3;
+        VisualizerContext.strokeStyle = Gradient;
+        for (let i = 0; i < MusicData_Wave.length; i++) {
+            let t = i/(MusicData_Wave.length-1)
+            let taper = Math.sin(Math.PI * t)
+            let Center = MusicVisualizer.height/2
+            let Offset = MusicData_Wave[i] - 128
+            let NewY = Center + ((Offset/128)*taper) * (Center)
+            let WaveX = (MusicVisualizer.width/MusicData_Wave.length)*i
+            if (i === 0) {
+                VisualizerContext.moveTo(WaveX, NewY);
+            } else {
+                VisualizerContext.lineTo(WaveX, NewY);
+            }
+        }
+        VisualizerContext.stroke();
     }
 }
