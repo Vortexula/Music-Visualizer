@@ -15,7 +15,7 @@ body {
     background-position: center;
 }
 
-separator {
+#separator {
     display: block;
     margin: 25px;
 }
@@ -33,7 +33,29 @@ section.MusicUpload {
     font-family: Courier, sans-serif;
     text-shadow: 3px 3px 4px #fffefe;
     text-align: center;
-    padding: 20px;
+    margin: 40px;
+}
+
+#AudioButton {
+    font-family: Monospace, sans-serif;
+    font-weight: bold;
+    border-radius: 15px;
+    font-size: 25px;
+    padding: 10px;
+    height: 25px;
+    background-color: white;
+    color: black;
+    display: inline-block;
+}
+
+#AudioButton:hover {
+    cursor: pointer;
+    background-color: gray;
+    color: white;
+}
+
+#audioFile {
+    display: none;
 }
 
 section.VisualizerChoice {
@@ -44,17 +66,49 @@ section.VisualizerChoice {
     padding: 20px;
 }
 
+#VisualizerSelection {
+    font-size: 25px;
+    background-color: black;
+    color: white;
+    font-family: Courier, sans-serif;
+    text-shadow: 3px 3px 4px #fffefe;
+    text-align: center;
+    padding: 5px;
+    border-radius: 10px;
+    appearance: none;
+}
+
+#VisualizerSelection::picker(select) {
+    color: white;
+    appearance: base-select;
+}
+
+#VisualizerContainer {
+    position: relative;
+    margin: 3% auto;
+    margin-left: 2%;
+    margin-right: 2%;
+    aspect-ratio: 4/3;
+}
+
 #musicVisualizer {
+    position: absolute; top: 0; left: 0;
     display: block;
-    margin: 20px auto;
-    width: 95%;
-    max-width: 95%;
+    width: 100%;
+    max-width: 100%;
     border: 2px solid white;
-    box-sizing: border-box;
+}
+
+#butterchurnCanvas {
+    position: absolute; top: 0; left: 0;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border: 2px solid white;
 }
 
 section.Controls {
-    margin: 50px;
+    padding: 50px;
     text-align: center;
 }
 
@@ -63,5 +117,13 @@ footer {
     font-family: Courier, sans-serif;
     text-shadow: 5px 5px 4px #fffefe;
     text-align: center;
-    padding: 10px;
+    padding: 100px;
+}
+
+#link {
+    -webkit-text-fill-color: white;
+}
+
+#link:hover {
+    -webkit-text-fill-color: gray;
 }

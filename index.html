@@ -11,17 +11,22 @@
         </section>
         <section class="MusicUpload">
             <h2>Upload a music file to visualize:</h2>
-            <input type="file" id="audioFile" accept="audio/*">
+            <div class="UploadButton">
+                <label id="AudioButton" for="audioFile">Upload Music</label>
+                <input type="file" id="audioFile" accept="audio/*">
+            </div>
         </section>
         <section class="VisualizerChoice">
             <h2>Choose a visualizer to use:</h2>
             <select id="visualizerSelection">
                 <option value="bars">Bars</option>
                 <option value="wave">Wave</option>
+                <option value="butterchurn">Butterchurn</option>
             </select>
         </section>
-        <section class="VisualizationContainer">
-            <canvas id="musicVisualizer" width="800" height="800"> Visualizer will play here.</canvas>
+        <section id="VisualizerContainer" class="VisualizationContainer">
+            <canvas id="musicVisualizer" width="700" height="600"> Visualizer will play here.</canvas>
+            <canvas id="butterchurnCanvas" width="700" height="600"> Visualizer will play here.</canvas>
         </section>
         <section class="controls">
             <audio id="controls" src="" controls></audio>
@@ -29,6 +34,7 @@
     </main>
     <footer>
         <p>Created by: Jonathan</p>
+        <p>Powered by <a id="link" href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext">AudioContext API</a> & <a id="link" href="https://github.com/jberg/butterchurn">Butterchurn</a></p>
     </footer>
 </body>
-<script src="main.js"></script>
+<script type="module" src="main.js"></script>
