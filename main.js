@@ -53,10 +53,10 @@ MusicFile.addEventListener("change", function() {
 })
 
 window.addEventListener("resize", function() {
-    CenterY = MusicVisualizer.height/2
-    CenterX = MusicVisualizer.width/2
     MusicVisualizer.width = MusicVisualizer.clientWidth
     MusicVisualizer.height = MusicVisualizer.clientHeight
+    CenterY = MusicVisualizer.height/2
+    CenterX = MusicVisualizer.width/2
     ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
     ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
     VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height

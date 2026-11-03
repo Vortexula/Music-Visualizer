@@ -15,11 +15,6 @@ body {
     background-position: center;
 }
 
-#separator {
-    display: block;
-    margin: 25px;
-}
-
 section.Description {
     color: white;
     font-family: Courier, sans-serif;
