@@ -2,21 +2,20 @@ import butterchurn from "https://cdn.jsdelivr.net/npm/butterchurn/+esm";
 
 const MusicFile = document.getElementById("audioFile");
 const MusicVisualizer = document.getElementById("musicVisualizer");
-const VisualizerContainer = document.getElementById("VisualizerContainer")
-const ButterchurnCanvas = document.getElementById("butterchurnCanvas")
-const VisualizerChoice = document.getElementById("visualizerSelection")
+const VisualizerContainer = document.getElementById("VisualizerContainer");
+const ButterchurnCanvas = document.getElementById("butterchurnCanvas");
+const VisualizerChoice = document.getElementById("visualizerSelection");
 const Controls = document.getElementById("controls");
 const VisualizerContext = MusicVisualizer.getContext("2d");
 
-let ButterchurnVisualizer = null
+let ButterchurnVisualizer = null;
 
-let VisualizerSelection = "bars"
+let VisualizerSelection = "bars";
 
 let NumberOfBars = 48;
 let Threshold = 0.3;
 let StartRadius = 100;
 
-let RadialGradient = null;
 let isPaused = true;
 let _AudioContext = null;
 let Analyzer = null;
@@ -32,11 +31,19 @@ ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
 ButterchurnCanvas.style.visibility = "hidden"
 VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height
 
+let CenterX = MusicVisualizer.width/2;
+let CenterY = MusicVisualizer.height/2;
+
 let Gradient = VisualizerContext.createLinearGradient(0, MusicVisualizer.height, 0, 0);
 
 Gradient.addColorStop(0, "green")
 Gradient.addColorStop(0.5, "yellow")
 Gradient.addColorStop(1, "red")
+
+let RadialGradient = VisualizerContext.createRadialGradient(CenterX, CenterY, StartRadius, CenterX, CenterY, StartRadius*2);
+RadialGradient.addColorStop(0, "green")
+RadialGradient.addColorStop(0.5, "yellow")
+RadialGradient.addColorStop(1, "red")
 
 MusicFile.addEventListener("change", function() {
     Music = URL.createObjectURL(MusicFile.files[0]);
@@ -46,6 +53,8 @@ MusicFile.addEventListener("change", function() {
 })
 
 window.addEventListener("resize", function() {
+    CenterY = MusicVisualizer.height/2
+    CenterX = MusicVisualizer.width/2
     MusicVisualizer.width = MusicVisualizer.clientWidth
     MusicVisualizer.height = MusicVisualizer.clientHeight
     ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
@@ -55,6 +64,10 @@ window.addEventListener("resize", function() {
     Gradient.addColorStop(0, "green")
     Gradient.addColorStop(0.5, "yellow")
     Gradient.addColorStop(1, "red") 
+    RadialGradient = VisualizerContext.createRadialGradient(CenterX, CenterY, StartRadius, CenterX, CenterY, StartRadius*2);
+    RadialGradient.addColorStop(0, "green")
+    RadialGradient.addColorStop(0.5, "yellow")
+    RadialGradient.addColorStop(1, "red")
     ButterchurnVisualizer.setRendererSize(ButterchurnCanvas.clientWidth, ButterchurnCanvas.clientHeight);
 });
 
@@ -137,15 +150,10 @@ function CircularAnimation() {
     let i0x,i0y = null;
     for (let i = 0; i < MusicData_Wave.length; i++) {
         let Angle = i/(MusicData_Wave.length)*(2*Math.PI)
-        let CenterY = MusicVisualizer.height/2
-        let CenterX = MusicVisualizer.width/2
         let Offset = MusicData_Wave[i]
         let WaveY = CenterY+Math.sin(Angle)*Offset
         let WaveX = CenterX+Math.cos(Angle)*Offset
-        RadialGradient = VisualizerContext.createRadialGradient(CenterX, CenterY, StartRadius, CenterX, CenterY, StartRadius*2);
-        RadialGradient.addColorStop(0, "green")
-        RadialGradient.addColorStop(0.5, "yellow")
-        RadialGradient.addColorStop(1, "red")
+        
         VisualizerContext.strokeStyle = RadialGradient;
         if (i === 0) {
             VisualizerContext.moveTo(WaveX, WaveY);
@@ -167,15 +175,9 @@ function ButterflyAnimation() {
     for (let i = 0; i < MusicData_Wave.length; i++) {
         let t = i/(MusicData_Wave.length-1)
         let taper = Math.cos(Math.PI*t)
-        let CenterY = MusicVisualizer.height/2
-        let CenterX = MusicVisualizer.width/2
         let Offset = MusicData_Wave[i]-128
         let WaveY =  CenterY+((Offset/128)*taper)*(CenterY)*1.2
         let WaveX = MusicVisualizer.width/2+Offset*2
-        RadialGradient = VisualizerContext.createRadialGradient(CenterX, CenterY, StartRadius, CenterX, CenterY, StartRadius*2);
-        RadialGradient.addColorStop(0, "green")
-        RadialGradient.addColorStop(0.1, "yellow")
-        RadialGradient.addColorStop(0.5, "red")
         VisualizerContext.strokeStyle = RadialGradient;
         if (i === 0) {
             VisualizerContext.moveTo(WaveX, WaveY);
