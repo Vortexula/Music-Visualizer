@@ -35,15 +35,8 @@ let CenterX = MusicVisualizer.width/2;
 let CenterY = MusicVisualizer.height/2;
 
 let Gradient = VisualizerContext.createLinearGradient(0, MusicVisualizer.height, 0, 0);
-
-Gradient.addColorStop(0, "green")
-Gradient.addColorStop(0.5, "yellow")
-Gradient.addColorStop(1, "red")
-
 let RadialGradient = VisualizerContext.createRadialGradient(CenterX, CenterY, StartRadius, CenterX, CenterY, StartRadius*2);
-RadialGradient.addColorStop(0, "green")
-RadialGradient.addColorStop(0.5, "yellow")
-RadialGradient.addColorStop(1, "red")
+let CenterGradient = VisualizerContext.createLinearGradient(0, MusicVisualizer.height, 0, 0);
 
 MusicFile.addEventListener("change", function() {
     Music = URL.createObjectURL(MusicFile.files[0]);
@@ -60,14 +53,7 @@ window.addEventListener("resize", function() {
     ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
     ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
     VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height
-    Gradient = VisualizerContext.createLinearGradient(0, MusicVisualizer.height, 0, 0);
-    Gradient.addColorStop(0, "green")
-    Gradient.addColorStop(0.5, "yellow")
-    Gradient.addColorStop(1, "red") 
-    RadialGradient = VisualizerContext.createRadialGradient(CenterX, CenterY, StartRadius, CenterX, CenterY, StartRadius*2);
-    RadialGradient.addColorStop(0, "green")
-    RadialGradient.addColorStop(0.5, "yellow")
-    RadialGradient.addColorStop(1, "red")
+    UpdateGradients();
     ButterchurnVisualizer.setRendererSize(ButterchurnCanvas.clientWidth, ButterchurnCanvas.clientHeight);
 });
 
@@ -118,6 +104,21 @@ function BarAnimation() {
     }
 }
 
+function CenterBarAnimation() {
+    VisualizerContext.fillStyle = CenterGradient;
+    Analyzer.getByteFrequencyData(MusicData_Bars)
+    let spacing = MusicData_Bars.length*Threshold/NumberOfBars
+    let BarWidth = MusicVisualizer.width/NumberOfBars
+    for (let i = 0; i < NumberOfBars; i++) {
+        let SlotIndex = Math.floor(i * spacing) + 3
+        let BarY = MusicData_Bars[SlotIndex] / 255
+        let RealHeight = BarY * CenterY
+        let BarHeight = CenterY-RealHeight
+        VisualizerContext.fillRect(i*BarWidth, CenterY, BarWidth-5, RealHeight);
+        VisualizerContext.fillRect(i*BarWidth, BarHeight, BarWidth-5, RealHeight);
+    }
+}
+
 function WaveAnimation() {
     Analyzer.getByteTimeDomainData(MusicData_Wave);
     VisualizerContext.beginPath();
@@ -128,7 +129,7 @@ function WaveAnimation() {
         let taper = Math.sin(Math.PI*t) // Multiplying t by PI in a sine makes it go from 0-1-0 (like a hill).
         let Center = MusicVisualizer.height/2 // Half the height of canvas.
         let Offset = MusicData_Wave[i]-128 // Offset converts analyzers unsigned 8-bit integer to a 8-bit signed integer. (-128>+127)
-        let WaveY =  Center+((Offset/128)*taper)*(Center) 
+        let WaveY = Center+((Offset/128)*taper)*(Center)
         // WaveY is defined as center + (offset / 128, which is a range between -1, 1, 0 being center of the canvas)
         // Then the offset/128 is multiplied by taper which is a range between 0, 1, 0, depending on index.
         // That is multiplied by half the canvas height to allow it to move up and down. (-Center to +Center)
@@ -188,6 +189,26 @@ function ButterflyAnimation() {
     VisualizerContext.stroke();
 }
 
+function UpdateGradients() {
+    Gradient = VisualizerContext.createLinearGradient(0, MusicVisualizer.height, 0, 0);
+    RadialGradient = VisualizerContext.createRadialGradient(CenterX, CenterY, StartRadius, CenterX, CenterY, StartRadius*2);
+    CenterGradient = VisualizerContext.createLinearGradient(0, MusicVisualizer.height, 0, 0);
+
+    Gradient.addColorStop(0, "green")
+    Gradient.addColorStop(0.5, "yellow")
+    Gradient.addColorStop(1, "red")
+
+    RadialGradient.addColorStop(0, "green")
+    RadialGradient.addColorStop(0.5, "yellow")
+    RadialGradient.addColorStop(1, "red")
+
+    CenterGradient.addColorStop(0, "purple")
+    CenterGradient.addColorStop(0.25, "blue")
+    CenterGradient.addColorStop(0.5, "cyan")
+    CenterGradient.addColorStop(0.75, "blue")
+    CenterGradient.addColorStop(1, "purple")
+}
+
 function AnimationTick() {
     
     VisualizerContext.clearRect(0, 0, MusicVisualizer.width, MusicVisualizer.height)
@@ -197,6 +218,9 @@ function AnimationTick() {
     if (!isPaused && Analyzer) {
         if (VisualizerSelection === "bars") { // Bars Visualizer
            BarAnimation();
+
+        } else if (VisualizerSelection === "centerbars") { // Center Bars Visualizer
+            CenterBarAnimation();
 
         } else if (VisualizerSelection === "wave") { // Wave Visualizer
             WaveAnimation();
@@ -213,4 +237,5 @@ function AnimationTick() {
     }
 }
 
+UpdateGradients();
 AnimationTick();
