@@ -1,6 +1,18 @@
-<html>
+<html lang="en-US">
+
 <head><link rel="stylesheet" href="style.css"></head>
+
 <body>
+
+    <!--Meta Tags-->
+
+    <meta charset="utf-8"> 
+    <meta author="Jonathan Durivage">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Music Visualizer">
+
+    <!-- Body -->
+
    <header>
         <title>Music Visualizer</title>
         <h1>Music Visualizer</h1>
@@ -16,16 +28,32 @@
                 <input type="file" id="audioFile" accept="audio/*">
             </div>
         </section>
-        <section class="VisualizerChoice">
-            <h2>Choose a visualizer to use:</h2>
-            <select id="visualizerSelection">
-                <option value="bars">Bars</option>
-                <option value="centerbars"> Middle Bars</option> 
-                <option value="wave">Wave</option>
-                <option value="circular">Circular</option>
-                <option value="butterfly">Butterfly</option>
-                <option value="butterchurn">Butterchurn</option>
-            </select>
+         <section class="Settings">
+            <h2>Settings</h2>
+            <div class="SettingsWrapper">
+                <select id="visualizerSelection">
+                    <option value="bars">Bars</option>
+                    <option value="centerbars"> Middle Bars</option> 
+                    <option value="wave">Wave</option>
+                    <option value="circular">Circular</option>
+                    <option value="butterfly">Butterfly</option>
+                    <option value="butterchurn">Butterchurn</option>
+                </select>
+                <input id="BarCount" type="number" min="1" max="1024" placeholder="48"></input>
+                <select id="AnalyzerLimit">
+                    <option value="256">256 (Default)</option> 
+                    <option value="512">512</option>
+                    <option value="1024">1024</option>
+                    <option value="2048">2048</option>
+                    <option value="4096">4096</option>
+                    <option value="8192">8192</option>
+                </select>
+            </div>
+            <div class="Separator"></div>
+            <span id="S1">Visualizer</span>
+            <span id="S2">Bar Count</span>
+            <span id="S3">Analyzer Range</span>
+            <p>Default Bar Count: 48 | Default Analyzer Range: 256 | Bar Count must be less than or equal to Analyzer Range!</p>
         </section>
         <section id="VisualizerContainer">
             <canvas id="musicVisualizer" width="700" height="600"> Visualizer will play here.</canvas>
@@ -40,5 +68,7 @@
         <p>Powered by <a id="link" href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext">AudioContext API</a> & <a id="link" href="https://github.com/jberg/butterchurn">Butterchurn</a></p>
     </footer>
 </body>
+
 <script type="module" src="main.js"></script>
+
 </html>

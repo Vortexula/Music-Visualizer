@@ -5,6 +5,8 @@ const MusicVisualizer = document.getElementById("musicVisualizer");
 const VisualizerContainer = document.getElementById("VisualizerContainer");
 const ButterchurnCanvas = document.getElementById("butterchurnCanvas");
 const VisualizerChoice = document.getElementById("visualizerSelection");
+const BarCountChoice = document.getElementById("BarCount")
+const AnalyzerChoice = document.getElementById("AnalyzerLimit")
 const Controls = document.getElementById("controls");
 const VisualizerContext = MusicVisualizer.getContext("2d");
 
@@ -15,6 +17,7 @@ let VisualizerSelection = "bars";
 let NumberOfBars = 48;
 let Threshold = 0.3;
 let StartRadius = 100;
+let AnalyzerRange = 256;
 
 let isPaused = true;
 let _AudioContext = null;
@@ -66,13 +69,26 @@ VisualizerChoice.addEventListener("change", function() {
     }
 })
 
+BarCountChoice.addEventListener("change", function() {
+    if (!isNaN(BarCountChoice.value) && BarCountChoice.value > 1 && BarCountChoice.value <= AnalyzerRange) {
+        NumberOfBars = BarCountChoice.value;
+    }
+})
+
+AnalyzerChoice.addEventListener("change", function() {
+    AnalyzerRange = AnalyzerChoice.value;
+    Analyzer.fftSize = AnalyzerRange;
+    MusicData_Bars = new Uint8Array(Analyzer.frequencyBinCount)
+    MusicData_Wave = new Uint8Array(Analyzer.fftSize)
+})
+
 Controls.addEventListener("play", function() {
     isPaused = false;
     if (!_AudioContext) {
         _AudioContext = new AudioContext();
         let MediaSource = _AudioContext.createMediaElementSource(Controls);
         Analyzer = _AudioContext.createAnalyser();
-        Analyzer.fftSize = 256
+        Analyzer.fftSize = AnalyzerRange;
         MediaSource.connect(Analyzer)
         Analyzer.connect(_AudioContext.destination)
         MusicData_Bars = new Uint8Array(Analyzer.frequencyBinCount)
@@ -97,7 +113,7 @@ function BarAnimation() {
     let BarWidth = MusicVisualizer.width/NumberOfBars
     for (let i = 0; i < NumberOfBars; i++) {
         let SlotIndex = Math.floor(i * spacing) + 3
-        let BarY = MusicData_Bars[SlotIndex] / 255
+        let BarY = MusicData_Bars[SlotIndex] / 256
         let RealHeight = BarY * MusicVisualizer.height
         let BarHeight = MusicVisualizer.height-RealHeight
         VisualizerContext.fillRect(i*BarWidth, BarHeight, BarWidth-5, RealHeight);
@@ -111,7 +127,7 @@ function CenterBarAnimation() {
     let BarWidth = MusicVisualizer.width/NumberOfBars
     for (let i = 0; i < NumberOfBars; i++) {
         let SlotIndex = Math.floor(i * spacing) + 3
-        let BarY = MusicData_Bars[SlotIndex] / 255
+        let BarY = MusicData_Bars[SlotIndex] / 256
         let RealHeight = BarY * CenterY
         let BarHeight = CenterY-RealHeight
         VisualizerContext.fillRect(i*BarWidth, CenterY, BarWidth-5, RealHeight);
