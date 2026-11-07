@@ -35,6 +35,7 @@ let Analyzer = null;
 let Music = null;
 let MusicData_Bars = null;
 let MusicData_Wave = null;
+let MusicData_Particle = null;
 let UsualBass = 0;
 let Count = 0;
 
@@ -79,6 +80,7 @@ SyncButton.addEventListener("click", async function() {
     Analyzer.fftSize = AnalyzerRange;
     MediaSource.connect(Analyzer)
     MusicData_Bars = new Uint8Array(Analyzer.frequencyBinCount)
+    MusicData_Particle = new Uint8Array(Analyzer.frequencyBinCount)
     MusicData_Wave = new Uint8Array(Analyzer.fftSize)
     ButterchurnVisualizer = butterchurn.default.createVisualizer(_AudioContext, ButterchurnCanvas, {
         width:"800",
@@ -137,6 +139,7 @@ Controls.addEventListener("play", function() {
         MediaSource.connect(Analyzer)
         Analyzer.connect(_AudioContext.destination)
         MusicData_Bars = new Uint8Array(Analyzer.frequencyBinCount)
+        MusicData_Particle = new Uint8Array(Analyzer.frequencyBinCount)
         MusicData_Wave = new Uint8Array(Analyzer.fftSize)
         ButterchurnVisualizer = butterchurn.default.createVisualizer(_AudioContext, ButterchurnCanvas, {
             width:"800",
@@ -266,8 +269,9 @@ function ParticleAnimation() {
         let Punch
         let AvgBass
         let Ratio
-        if (MusicData_Bars) {
-            AvgBass = WaveSize*((MusicData_Bars[1]+MusicData_Bars[2]+MusicData_Bars[3])/3)
+        if (MusicData_Particle) {
+            Analyzer.getByteFrequencyData(MusicData_Particle)
+            AvgBass = WaveSize*((MusicData_Particle[1]+MusicData_Particle[2]+MusicData_Particle[3])/3)
             UsualBass = UsualBass+(AvgBass-UsualBass)*0.02
             Ratio = AvgBass/UsualBass;
             Punch = Math.max(0, Ratio-1)
