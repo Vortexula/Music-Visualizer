@@ -22,15 +22,16 @@
             <h3>Welcome to my Music Visualizer, I worked very hard on it and I hope you enjoy it!</h3>
         </section>
         <section class="MusicUpload">
-            <h2>Upload a music file to visualize:</h2>
+            <h2>Upload a music file to or sync audio visualize:</h2>
             <div class="UploadButton">
-                <label id="AudioButton" for="audioFile">Upload Music</label>
-                <input type="file" id="audioFile" accept="audio/*">
+                    <label id="AudioButton" for="audioFile">Upload Music</label>
+                    <input type="file" id="audioFile" accept="audio/*">
             </div>
+            <button id="SyncButton">Sync Audio</button>
         </section>
          <section class="Settings">
             <h2>Settings</h2>
-            <div class="SettingsWrapper">
+            <div class="Wrapper">
                 <select id="visualizerSelection">
                     <option value="bars">Bars</option>
                     <option value="centerbars"> Middle Bars</option> 
@@ -58,6 +59,7 @@
         <section id="VisualizerContainer">
             <canvas id="musicVisualizer" width="700" height="600"> Visualizer will play here.</canvas>
             <canvas id="butterchurnCanvas" width="700" height="600"> Visualizer will play here.</canvas>
+            <canvas id="ParticleCanvas" width="700" height="1000"> Visualizer will play here.</canvas>
         </section>
         <section class="controls">
             <audio id="controls" src="" controls></audio>

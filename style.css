@@ -9,41 +9,76 @@ h1 {
 }
 
 body {
-    background-image: url('Images/Background.jpg');
+    background-color: black;
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
+    z-index: 2;
 }
 
 section.Description {
     color: white;
     font-family: Courier, sans-serif;
-    text-shadow: 0px 0px 4px #fffefe;
+    text-shadow: 0px 1px 3px #fffefe;
     text-align: center;
     padding: 20px;
 }
 
 section.MusicUpload {
+    text-align: center;
+}
+
+h2 {
+    font-family: Monospace, sans-serif;
+    font-weight: bold;
     color: white;
-    font-family: Courier, sans-serif;
     text-shadow: 3px 3px 4px #fffefe;
     text-align: center;
-    margin: 40px;
+    margin-bottom: 20px;
 }
 
 #AudioButton {
-    font-family: Monospace, sans-serif;
-    font-weight: bold;
-    border-radius: 15px;
+    border-radius: 10px;
     font-size: 25px;
     padding: 10px;
+    margin-left: 250px;
     height: 25px;
-    background-color: white;
-    color: black;
-    display: inline-block;
+    width: 200px;
+    text-align: center;
+    border-width: 1px;
+    border-style: ridge;
+    border-color: #858585a2;
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    font-family: Courier, sans-serif;
+    text-shadow: 3px 3px 4px #fffefe;
+}
+
+#SyncButton {
+    margin-top: -39px;
+    margin-right: 250px;
+    border-radius: 10px;
+    width: 200px;
+    font-size: 25px;
+    padding: 10px;
+    height: 50px;
+    border-width: 1px;
+    text-align: center;
+    border-style: ridge;
+    border-color: #858585a2;
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
+    font-family: Courier, sans-serif;
+    text-shadow: 3px 3px 4px #fffefe;
 }
 
 #AudioButton:hover {
+    cursor: pointer;
+    background-color: gray;
+    color: white;
+}
+
+#SyncButton:hover {
     cursor: pointer;
     background-color: gray;
     color: white;
@@ -60,9 +95,9 @@ section.Settings {
     text-align: center;
 }
 
-
-div.SettingsWrapper {
+div.Wrapper {
     display: contents;
+    text-align: center;
 }
 
 #S1 {
@@ -146,6 +181,15 @@ select {
     width: 100%;
     max-width: 100%;
     border: 2px solid white;
+}
+
+#ParticleCanvas {
+    color: white;
+    position: fixed; top: 0; left: 0;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    z-index: -1;
 }
 
 section.Controls {

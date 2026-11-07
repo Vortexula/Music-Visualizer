@@ -1,14 +1,17 @@
 import butterchurn from "https://cdn.jsdelivr.net/npm/butterchurn/+esm";
 
 const MusicFile = document.getElementById("audioFile");
+const SyncButton = document.getElementById("SyncButton")
 const MusicVisualizer = document.getElementById("musicVisualizer");
 const VisualizerContainer = document.getElementById("VisualizerContainer");
 const ButterchurnCanvas = document.getElementById("butterchurnCanvas");
+const ParticleCanvas = document.getElementById("ParticleCanvas");
 const VisualizerChoice = document.getElementById("visualizerSelection");
-const BarCountChoice = document.getElementById("BarCount")
-const AnalyzerChoice = document.getElementById("AnalyzerLimit")
+const BarCountChoice = document.getElementById("BarCount");
+const AnalyzerChoice = document.getElementById("AnalyzerLimit");
 const Controls = document.getElementById("controls");
 const VisualizerContext = MusicVisualizer.getContext("2d");
+const ParticleContext = ParticleCanvas.getContext("2d");
 
 let ButterchurnVisualizer = null;
 
@@ -19,18 +22,28 @@ let Threshold = 0.3;
 let StartRadius = 100;
 let AnalyzerRange = 256;
 
+let ParticleColumns = 60;
+let ParticleRows = 40;
+let NumberOfDots = (ParticleColumns*ParticleRows);
+
+let AudioMode = "UserOutput"; // File - UserOutput
+let AudioStream = null;
+let MediaSource = null;
 let isPaused = true;
 let _AudioContext = null;
 let Analyzer = null;
 let Music = null;
 let MusicData_Bars = null;
 let MusicData_Wave = null;
+let UsualBass = 0;
 let Count = 0;
 
 MusicVisualizer.width = MusicVisualizer.clientWidth
 MusicVisualizer.height = MusicVisualizer.clientHeight
 ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
 ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
+ParticleCanvas.width = ParticleCanvas.clientWidth
+ParticleCanvas.height = ParticleCanvas.clientHeight
 ButterchurnCanvas.style.visibility = "hidden"
 VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height
 
@@ -43,9 +56,37 @@ let CenterGradient = VisualizerContext.createLinearGradient(0, MusicVisualizer.h
 
 MusicFile.addEventListener("change", function() {
     Music = URL.createObjectURL(MusicFile.files[0]);
-    console.log(Music);
+    AudioMode = "File";
     Controls.src = Music
-    Controls.play()
+    Controls.play();
+})
+
+SyncButton.addEventListener("click", async function() {
+    isPaused = false;
+    Controls.src = null;
+    if (!_AudioContext) {
+        _AudioContext = new AudioContext();
+    }
+    try {
+    AudioStream = await navigator.mediaDevices.getDisplayMedia({audio: true})
+    } catch (error) {
+        console.log("User denied.")
+        return
+    }
+    AudioMode = "Sync";
+    MediaSource = _AudioContext.createMediaStreamSource(AudioStream);
+    Analyzer = _AudioContext.createAnalyser();
+    Analyzer.fftSize = AnalyzerRange;
+    MediaSource.connect(Analyzer)
+    MusicData_Bars = new Uint8Array(Analyzer.frequencyBinCount)
+    MusicData_Wave = new Uint8Array(Analyzer.fftSize)
+    ButterchurnVisualizer = butterchurn.default.createVisualizer(_AudioContext, ButterchurnCanvas, {
+        width:"800",
+        height:"600"
+    });
+    ButterchurnVisualizer.connectAudio(MediaSource);
+    ButterchurnVisualizer.setRendererSize(ButterchurnCanvas.clientWidth, ButterchurnCanvas.clientHeight);
+
 })
 
 window.addEventListener("resize", function() {
@@ -55,9 +96,13 @@ window.addEventListener("resize", function() {
     CenterX = MusicVisualizer.width/2
     ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
     ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
+    ParticleCanvas.width = ParticleCanvas.clientWidth
+    ParticleCanvas.height = ParticleCanvas.clientHeight
     VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height
     UpdateGradients();
-    ButterchurnVisualizer.setRendererSize(ButterchurnCanvas.clientWidth, ButterchurnCanvas.clientHeight);
+    if (ButterchurnVisualizer) {
+        ButterchurnVisualizer.setRendererSize(ButterchurnCanvas.clientWidth, ButterchurnCanvas.clientHeight);
+    }
 });
 
 VisualizerChoice.addEventListener("change", function() {
@@ -84,9 +129,9 @@ AnalyzerChoice.addEventListener("change", function() {
 
 Controls.addEventListener("play", function() {
     isPaused = false;
-    if (!_AudioContext) {
+    if (!_AudioContext && AudioMode === "File") {
         _AudioContext = new AudioContext();
-        let MediaSource = _AudioContext.createMediaElementSource(Controls);
+        MediaSource = _AudioContext.createMediaElementSource(Controls);
         Analyzer = _AudioContext.createAnalyser();
         Analyzer.fftSize = AnalyzerRange;
         MediaSource.connect(Analyzer)
@@ -103,7 +148,9 @@ Controls.addEventListener("play", function() {
 })
 
 Controls.addEventListener("pause", function() {
-    isPaused = true;
+    if (AudioMode === "File") {
+        isPaused = true;
+    }
 })
 
 function BarAnimation() {
@@ -205,6 +252,47 @@ function ButterflyAnimation() {
     VisualizerContext.stroke();
 }
 
+function ParticleAnimation() {
+    //if (Analyzer) {
+        let CenterX = ParticleCanvas.width/2;
+        let Horizon = ParticleCanvas.height*0.3;
+        let FloorHeight = 2;
+        let Scale = (ParticleCanvas.height - Horizon)/FloorHeight;
+        let Radius = 6;
+        let Gap = 0.1;
+        let CenterZ = 1+(ParticleRows/2)*Gap
+        let WaveTightness = 5;
+        let WaveSize = 0.2;
+        let Punch
+        let AvgBass
+        let Ratio
+        if (MusicData_Bars) {
+            AvgBass = WaveSize*((MusicData_Bars[1]+MusicData_Bars[2]+MusicData_Bars[3])/3)
+            UsualBass = UsualBass+(AvgBass-UsualBass)*0.02
+            Ratio = AvgBass/UsualBass;
+            Punch = Math.max(0, Ratio-1)
+            WaveSize = 0.2+Punch*15;
+        }
+        for (let y=0; y < ParticleRows; y++) {
+            let Z = 1+y*Gap
+            ParticleContext.beginPath();
+            let Opacity = y/(ParticleRows-1)
+            ParticleContext.fillStyle = `rgba(100,100,100, ${(1-Opacity)*0.9})`;
+            for (let x=0; x < ParticleColumns; x++) {
+                let WorldX = (x-(ParticleColumns/2))*Gap
+                let ScreenX = CenterX+WorldX*Scale/Z
+                let Distance = Math.sqrt(WorldX**2+(Z-CenterZ)**2)
+                let Height = Math.sin(Distance*WaveTightness - Count*0.05) * WaveSize;
+                let ScreenY = Horizon+(FloorHeight-Height)*Scale/Z
+                let Size = Radius/Z
+                ParticleContext.moveTo(ScreenX+Size, ScreenY)
+                ParticleContext.arc(ScreenX, ScreenY, Size, 0, (2*Math.PI));
+            }
+            ParticleContext.fill();
+        }
+    //}
+}
+
 function UpdateGradients() {
     Gradient = VisualizerContext.createLinearGradient(0, MusicVisualizer.height, 0, 0);
     RadialGradient = VisualizerContext.createRadialGradient(CenterX, CenterY, StartRadius, CenterX, CenterY, StartRadius*2);
@@ -228,8 +316,11 @@ function UpdateGradients() {
 function AnimationTick() {
     
     VisualizerContext.clearRect(0, 0, MusicVisualizer.width, MusicVisualizer.height)
+    ParticleContext.clearRect(0, 0, ParticleCanvas.width, ParticleCanvas.height)
     requestAnimationFrame(AnimationTick)
     Count++;
+
+    ParticleAnimation();
 
     if (!isPaused && Analyzer) {
         if (VisualizerSelection === "bars") { // Bars Visualizer
