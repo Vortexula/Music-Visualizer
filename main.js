@@ -275,7 +275,7 @@ function ParticleAnimation() {
             UsualBass = UsualBass+(AvgBass-UsualBass)*0.02
             Ratio = AvgBass/UsualBass;
             Punch = Math.max(0, Ratio-1)
-            WaveSize = 0.2+Punch*15;
+            WaveSize = 0.2+Punch*10;
         }
         for (let y=0; y < ParticleRows; y++) {
             let Z = 1+y*Gap
