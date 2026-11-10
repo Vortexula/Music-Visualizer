@@ -22,8 +22,9 @@ let Threshold = 0.3;
 let StartRadius = 100;
 let AnalyzerRange = 256;
 
-let ParticleColumns = 60;
-let ParticleRows = 40;
+let ParticleColumns = 120; // 120 Wave, 60 Drop
+let ParticleRows = 100; // 100 Wave, 40 Drop
+let ParticlePreset = "Wave"; // Drop, Wave
 let NumberOfDots = (ParticleColumns*ParticleRows);
 
 let AudioMode = "UserOutput"; // File - UserOutput
@@ -38,6 +39,14 @@ let MusicData_Wave = null;
 let MusicData_Particle = null;
 let UsualBass = 0;
 let Count = 0;
+
+if (ParticlePreset === "Wave") {
+    ParticleColumns = 120
+    ParticleRows = 100
+} else if (ParticlePreset === "Drop") {
+    ParticleColumns = 60
+    ParticleRows = 40
+}
 
 MusicVisualizer.width = MusicVisualizer.clientWidth
 MusicVisualizer.height = MusicVisualizer.clientHeight
@@ -269,28 +278,45 @@ function ParticleAnimation() {
         let Punch
         let AvgBass
         let Ratio
-        if (MusicData_Particle) {
-            Analyzer.getByteFrequencyData(MusicData_Particle)
+        if (MusicData_Particle) { // Wave Size Additive
+            Analyzer.getByteFrequencyData(MusicData_Particle);
             AvgBass = WaveSize*((MusicData_Particle[1]+MusicData_Particle[2]+MusicData_Particle[3])/3)
             UsualBass = UsualBass+(AvgBass-UsualBass)*0.02
-            Ratio = AvgBass/UsualBass;
+            Ratio = AvgBass/UsualBass
             Punch = Math.max(0, Ratio-1)
             WaveSize = 0.2+Punch*10;
+            // Additive based on average of first 3 values in analyzer.
+            // Multiplied by itself subtracting the usual base times a very low number to get the difference.
+            // The punch is the max value between 0 and the avgbass divided by the usualbass.
+            // WaveSize is base WaveSize+Punch*Multiplier
         }
-        for (let y=0; y < ParticleRows; y++) {
+        for (let y=0; y < ParticleRows; y++) { // For Each Row
             let Z = 1+y*Gap
             ParticleContext.beginPath();
             let Opacity = y/(ParticleRows-1)
-            ParticleContext.fillStyle = `rgba(100,100,100, ${(1-Opacity)*0.9})`;
-            for (let x=0; x < ParticleColumns; x++) {
+            ParticleContext.fillStyle = `rgba(100,100,100, ${(1-Opacity)*0.9})`; // Reduces opacity from current row in total rows.
+            for (let x=0; x < ParticleColumns; x++) { // For Each Column
                 let WorldX = (x-(ParticleColumns/2))*Gap
+                if (ParticlePreset === "Drop") {
+                    CenterZ = 1+(ParticleRows/2)*Gap
+                    WorldX = (x-(ParticleColumns/2))*Gap
+                    CenterX = ParticleCanvas.width/2
+                    ParticleColumns = 60
+                    ParticleRows = 40
+                } else if (ParticlePreset === "Wave") {
+                    CenterZ = 1+(ParticleRows)*Gap
+                    WorldX = (x-(ParticleColumns))*Gap
+                    CenterX = ParticleCanvas.width
+                    ParticleColumns = 120
+                    ParticleRows = 100         
+                }
                 let ScreenX = CenterX+WorldX*Scale/Z
-                let Distance = Math.sqrt(WorldX**2+(Z-CenterZ)**2)
-                let Height = Math.sin(Distance*WaveTightness - Count*0.05) * WaveSize;
+                let Distance = Math.sqrt(WorldX**2+(Z-CenterZ)**2) // Determines distance of particle based on row and column.
+                let Height = Math.sin(Distance*WaveTightness - Count*0.05) * WaveSize; // Determines Particle Height in wave.
                 let ScreenY = Horizon+(FloorHeight-Height)*Scale/Z
                 let Size = Radius/Z
-                ParticleContext.moveTo(ScreenX+Size, ScreenY)
-                ParticleContext.arc(ScreenX, ScreenY, Size, 0, (2*Math.PI));
+                ParticleContext.moveTo(ScreenX+Size, ScreenY);
+                ParticleContext.arc(ScreenX, ScreenY, Size, 0, (2*Math.PI)); // Draw particle at screen space position.
             }
             ParticleContext.fill();
         }
