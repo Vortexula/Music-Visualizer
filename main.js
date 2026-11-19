@@ -54,8 +54,8 @@ MusicVisualizer.width = MusicVisualizer.clientWidth
 MusicVisualizer.height = MusicVisualizer.clientHeight
 ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
 ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
-ParticleCanvas.width = ParticleCanvas.clientWidth
-ParticleCanvas.height = ParticleCanvas.clientHeight
+ParticleCanvas.width = window.innerWidth
+ParticleCanvas.height = window.innerHeight
 ButterchurnCanvas.style.visibility = "hidden"
 VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height
 
@@ -109,8 +109,8 @@ window.addEventListener("resize", function() {
     CenterX = MusicVisualizer.width/2
     ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
     ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
-    ParticleCanvas.width = ParticleCanvas.clientWidth
-    ParticleCanvas.height = ParticleCanvas.clientHeight
+    ParticleCanvas.width = window.innerWidth
+    ParticleCanvas.height = window.innerHeight
     VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height
     UpdateGradients();
     if (ButterchurnVisualizer) {
@@ -304,8 +304,8 @@ function ParticleAnimation() {
                     CenterZ = 1+(ParticleRows/2)*Gap
                     WorldX = (x-(ParticleColumns/2))*Gap
                     CenterX = ParticleCanvas.width/2
-                    ParticleColumns = 60
-                    ParticleRows = 40
+                    ParticleColumns = 80
+                    ParticleRows = 80
                 } else if (ParticlePreset === "Wave") {
                     CenterZ = 1+(ParticleRows)*Gap
                     WorldX = (x-(ParticleColumns-0.5))*Gap
