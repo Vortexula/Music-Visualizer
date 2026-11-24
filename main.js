@@ -42,14 +42,6 @@ let MusicData_Particle = null;
 let UsualBass = 0;
 let Count = 0;
 
-if (ParticlePreset === "Wave") {
-    ParticleColumns = 120
-    ParticleRows = 100
-} else if (ParticlePreset === "Drop") {
-    ParticleColumns = 60
-    ParticleRows = 40
-}
-
 if (navigator.userAgent.includes("Safari") || navigator.userAgent.includes("Firefox")) {
     SyncButton.style.display = "none";
     document.getElementById("AudioButton").style.marginLeft = "0px";
@@ -59,8 +51,8 @@ MusicVisualizer.width = MusicVisualizer.clientWidth
 MusicVisualizer.height = MusicVisualizer.clientHeight
 ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
 ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
-ParticleCanvas.width = window.innerWidth
-ParticleCanvas.height = window.innerHeight
+ParticleCanvas.width = window.innerWidth+10
+ParticleCanvas.height = window.innerHeight+25
 ButterchurnCanvas.style.visibility = "hidden"
 VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height
 
@@ -114,8 +106,8 @@ window.addEventListener("resize", function() {
     CenterX = MusicVisualizer.width/2
     ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
     ButterchurnCanvas.height = ButterchurnCanvas.clientHeight
-    ParticleCanvas.width = window.innerWidth
-    ParticleCanvas.height = window.innerHeight
+    ParticleCanvas.width = window.innerWidth+10
+    ParticleCanvas.height = window.innerHeight+25
     VisualizerContainer.style.aspectRatio = MusicVisualizer.width/MusicVisualizer.height
     UpdateGradients();
     if (ButterchurnVisualizer) {
@@ -302,7 +294,7 @@ function ParticleAnimation() {
             let Z = 1+y*Gap
             ParticleContext.beginPath();
             let Opacity = y/(ParticleRows-1)
-            ParticleContext.fillStyle = `rgba(100,100,100, ${(1-Opacity)*0.9}1)`; // Reduces opacity from current row in total rows.
+            ParticleContext.fillStyle = `rgba(100,100,100, ${(1-Opacity)*0.9})`; // Reduces opacity from current row in total rows.
             for (let x=0; x < ParticleColumns; x++) { // For Each Column
                 let WorldX = (x-(ParticleColumns/2))*Gap
                 if (ParticlePreset === "Drop") {
