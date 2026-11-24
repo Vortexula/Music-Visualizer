@@ -48,6 +48,11 @@ if (ParticlePreset === "Wave") {
     ParticleRows = 40
 }
 
+if (navigator.userAgent.includes("Safari") || navigator.userAgent.includes("Firefox")) {
+    SyncButton.style.display = "none";
+    document.getElementById("AudioButton").style.marginLeft = "0px";
+}
+
 MusicVisualizer.width = MusicVisualizer.clientWidth
 MusicVisualizer.height = MusicVisualizer.clientHeight
 ButterchurnCanvas.width = ButterchurnCanvas.clientWidth
